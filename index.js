@@ -40,7 +40,7 @@ app.post('/api/shorturl', function(req, res) {
 
     urlDatabase.push({ originalUrl: OriginalUrl, shortUrl });
 
-    return res.json({ original_url: OriginalUrl, short_url: shortUrl });
+    return res.json({ originalUrl: OriginalUrl, short_url: shortUrl });
     }
     );
 
@@ -48,7 +48,7 @@ app.post('/api/shorturl', function(req, res) {
 
   }catch (error) {
     console.error('Error processing URL:', error);
-    return res.status(500).json({ error: 'invalid url' });
+    return res.status(400).json({ error: 'Invalid url' });
   }
 });
 
@@ -60,7 +60,7 @@ app.get('/api/shorturl/:short_url', (req, res) => {
   if (entry) {
     res.redirect(entry.original_url);
   } else {
-    res.status(400).json({ error: 'invalid url' });
+    res.status(400).json({ error: 'Invalid url' });
   }
 });
 
