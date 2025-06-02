@@ -55,7 +55,7 @@ app.post('/api/shorturl', function(req, res) {
 // Your first API endpoint
 app.get('/api/shorturl/:short_url', (req, res) => {
   const short = parseInt(req.params.short_url);
-  const entry = urlDatabase.find(item => item.short_url === short);
+  const entry = urlDatabase.find(item => item.shortUrl === short);
 
   if (entry) {
     res.redirect(entry.original_url);
