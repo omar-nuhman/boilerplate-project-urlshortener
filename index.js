@@ -38,9 +38,10 @@ app.post('/api/shorturl', function(req, res) {
 
     const shortUrl = id++;
 
-    urlDatabase.push({ originalUrl: OriginalUrl, shortUrl });
 
-    return res.json({ originalUrl: OriginalUrl, short_url: shortUrl });
+    urlDatabase.push({ original_url: OriginalUrl, shortUrl });
+
+    return res.json({ original_url: OriginalUrl, short_url: shortUrl });
     }
     );
 
