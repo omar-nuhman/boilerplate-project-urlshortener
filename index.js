@@ -23,35 +23,43 @@ app.get('/', function(req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
-app.post('/api/shorturl', function(req, res) {
+app.post('/api/shorturl', function (req, res) {
   const originalUrl = req.body.url;
-const urlRegex = /^https?:\/\/([\w-]+\.)*[\w-]+\.[a-zA-Z0-9]{1,}(:[0-9]+)?(\/.*)?$/;  // Check if URL matches the expected format
-  if (!urlRegex.test(originalUrl)) {
+
+  // Lightweight protocol + hostname check
+  const basicHttpRegex = /^https?:\/\/[^ "]+$/;
+  if (!basicHttpRegex.test(originalUrl)) {
     return res.json({ error: 'invalid url' });
   }
 
+  let parsedUrl;
   try {
-    const parsedUrl = new URL(originalUrl);
+    parsedUrl = new URL(originalUrl);
+  } catch (e) {
+    return res.json({ error: 'invalid url' });
+  }
 
-    if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
-      return res.status(400).json({ error: 'invalid url' });
+  // Additional check: only http or https
+  if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+    return res.json({ error: 'invalid url' });
+  }
+
+  // Check DNS
+  dns.lookup(parsedUrl.hostname, (err) => {
+    if (err) {
+      return res.json({ error: 'invalid url' });
     }
 
-    dns.lookup(parsedUrl.hostname, (err) => {
-      if (err) {
-        return res.json({ error: 'invalid url' });
-      }
+    const existing = urlDatabase.find(entry => entry.original_url === originalUrl);
+    if (existing) {
+      return res.json(existing);
+    }
 
-      const short_url = id++;
-      urlDatabase.push({ original_url: originalUrl, short_url });
-
-      return res.json({ original_url: originalUrl, short_url });
-    });
-
-  } catch (error) {
-    console.error('Error processing URL:', error);
-    return res.json({ error: 'invalid url' });
-  }
+    const short_url = id++;
+    const newEntry = { original_url: originalUrl, short_url };
+    urlDatabase.push(newEntry);
+    res.json(newEntry);
+  });
 });
 
 
