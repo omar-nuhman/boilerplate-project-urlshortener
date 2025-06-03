@@ -24,10 +24,12 @@ app.get('/', function(req, res) {
 });
 
 app.post('/api/shorturl', function(req, res) {
-  const OriginalUrl = req.body.url;
-  try{
-    const parsedUrl = new URL(OriginalUrl);
-    if(parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:'){
+  const originalUrl = req.body.url;
+
+  try {
+    const parsedUrl = new URL(originalUrl);
+
+    if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
       return res.status(400).json({ error: 'invalid url' });
     }
 
@@ -36,27 +38,23 @@ app.post('/api/shorturl', function(req, res) {
         return res.status(400).json({ error: 'invalid url' });
       }
 
-    const shortUrl = id++;
+      const short_url = id++;
+      urlDatabase.push({ original_url: originalUrl, short_url });
 
+      return res.json({ original_url: originalUrl, short_url });
+    });
 
-    urlDatabase.push({ original_url: OriginalUrl, shortUrl });
-
-    return res.json({ original_url: OriginalUrl, short_url: shortUrl });
-    }
-    );
-
-    
-
-  }catch (error) {
+  } catch (error) {
     console.error('Error processing URL:', error);
     return res.status(400).json({ error: 'invalid url' });
   }
 });
 
+
 // Your first API endpoint
 app.get('/api/shorturl/:short_url', (req, res) => {
   const short = parseInt(req.params.short_url);
-  const entry = urlDatabase.find(item => item.shortUrl === short);
+  const entry = urlDatabase.find(item => item.short_url === short);
 
   if (entry) {
     res.redirect(entry.original_url);
