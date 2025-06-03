@@ -25,17 +25,22 @@ app.get('/', function(req, res) {
 
 app.post('/api/shorturl', function(req, res) {
   const originalUrl = req.body.url;
+  const urlRegex = /^https?:\/\/(www\.)?[\w-]+\.[\w]{2,}(\/.*)?$/;
+  // Check if URL matches the expected format
+  if (!urlRegex.test(originalUrl)) {
+    return res.json({ error: 'invalid url' });
+  }
 
   try {
     const parsedUrl = new URL(originalUrl);
 
     if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
-      return res.status(400).json({ error: 'Invalid URL' });
+      return res.status(400).json({ error: 'invalid url' });
     }
 
     dns.lookup(parsedUrl.hostname, (err) => {
       if (err) {
-        return res.json({ error: 'Invalid URL' });
+        return res.json({ error: 'invalid url' });
       }
 
       const short_url = id++;
@@ -46,7 +51,7 @@ app.post('/api/shorturl', function(req, res) {
 
   } catch (error) {
     console.error('Error processing URL:', error);
-    return res.json({ error: 'Invalid URL' });
+    return res.json({ error: 'invalid url' });
   }
 });
 
@@ -59,7 +64,7 @@ app.get('/api/shorturl/:short_url', (req, res) => {
   if (entry) {
     res.redirect(entry.original_url);
   } else {
-    res.status(400).json({ error: 'Invalid URL' });
+    res.status(400).json({ error: 'invalid url' });
   }
 });
 
