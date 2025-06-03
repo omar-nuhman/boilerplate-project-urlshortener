@@ -35,7 +35,7 @@ app.post('/api/shorturl', function(req, res) {
 
     dns.lookup(parsedUrl.hostname, (err) => {
       if (err) {
-        return res.status(400).json({ error: 'invalid url' });
+        return res.json({ error: 'invalid url' });
       }
 
       const short_url = id++;
@@ -46,7 +46,7 @@ app.post('/api/shorturl', function(req, res) {
 
   } catch (error) {
     console.error('Error processing URL:', error);
-    return res.status(400).json({ error: 'invalid url' });
+    return res.json({ error: 'invalid url' });
   }
 });
 
