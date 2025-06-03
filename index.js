@@ -30,12 +30,12 @@ app.post('/api/shorturl', function(req, res) {
     const parsedUrl = new URL(originalUrl);
 
     if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
-      return res.status(400).json({ error: 'invalid url' });
+      return res.status(400).json({ error: 'Invalid URL' });
     }
 
     dns.lookup(parsedUrl.hostname, (err) => {
       if (err) {
-        return res.json({ error: 'invalid url' });
+        return res.json({ error: 'Invalid URL' });
       }
 
       const short_url = id++;
@@ -46,7 +46,7 @@ app.post('/api/shorturl', function(req, res) {
 
   } catch (error) {
     console.error('Error processing URL:', error);
-    return res.json({ error: 'invalid url' });
+    return res.json({ error: 'Invalid URL' });
   }
 });
 
@@ -59,7 +59,7 @@ app.get('/api/shorturl/:short_url', (req, res) => {
   if (entry) {
     res.redirect(entry.original_url);
   } else {
-    res.status(400).json({ error: 'invalid url' });
+    res.status(400).json({ error: 'Invalid URL' });
   }
 });
 
